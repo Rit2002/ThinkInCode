@@ -1,7 +1,11 @@
+// core modules
 const express = require('express');
 const cookieParser = require('cookie-parser');
 const dotenv = require('dotenv');
-const main = require('./config/db')
+
+// custom modules
+const main = require('./config/db.config');
+const authRouter = require('./routes/auth.route');
 
 const app = express();
 dotenv.config();
@@ -9,6 +13,8 @@ dotenv.config();
 app.use(express.json());
 app.use(express.urlencoded({ extended : true }));
 app.use(cookieParser());
+
+app.use('/TIC/api/v1', authRouter);
 
 main()
     .then(() => {
