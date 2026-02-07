@@ -26,6 +26,27 @@ const registerUser = async (data) => {
     }
 }
 
+const getUserByEmail = async (email) => {
+    try {
+        const user = await User.findOne({email : email});
+
+        if(!user) {
+            throw {
+                err : 'User NOT found for given email',
+                code : STATUS.UNAUTHORISED
+            }
+        }
+
+        return user;
+
+    } catch (error) {
+        console.log(error);
+
+        throw error;        
+    }
+}
+
 module.exports = {
-    registerUser
+    registerUser,
+    getUserByEmail
 }

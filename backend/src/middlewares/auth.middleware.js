@@ -23,6 +23,22 @@ const validateUserRequestBody = (req, res, next) => {
     next();
 }
 
+const validateUserSigninRequest = (req, res, next) => {
+
+    if(!req.body.email) {
+        errorResponseBody.err = 'No email found in request body';
+        return res.status(STATUS.BAD_REQUEST).json(errorResponseBody);
+    }
+    
+    if(!req.body.password) {
+        errorResponseBody.err = 'No password found in request body';
+        return res.status(STATUS.BAD_REQUEST).json(errorResponseBody);
+    }
+
+    next();
+}
+
 module.exports = {
-    validateUserRequestBody
+    validateUserRequestBody,
+    validateUserSigninRequest
 }

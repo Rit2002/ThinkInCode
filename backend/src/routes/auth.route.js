@@ -10,4 +10,10 @@ authRoute.post(
     authController.register
 );
 
+authRoute.get(
+    '/auth/signin',
+    authMiddleware.validateUserSigninRequest,
+    authController.signin
+)
+
 module.exports = authRoute;
