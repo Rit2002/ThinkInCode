@@ -1,5 +1,6 @@
 const User = require('../models/user.model');
 const { STATUS } = require('../utils/contants');
+const AppError = require('../utils/errorbody');
 
 const registerUser = async (data) => {
     try {
@@ -16,10 +17,10 @@ const registerUser = async (data) => {
                 err[key] = error.errors[key].message;
             });
 
-            throw {
-                err : err,
-                code : STATUS.UNPROCESSABLE_ENTITY                
-            }
+            throw new AppError (
+                err,
+                STATUS.UNPROCESSABLE_ENTITY                
+            )
         }
         
         throw error;
@@ -31,10 +32,10 @@ const getUserByEmail = async (email) => {
         const user = await User.findOne({email : email});
 
         if(!user) {
-            throw {
-                err : 'User NOT found for given email',
-                code : STATUS.UNAUTHORISED
-            }
+            throw new AppError(
+                'User NOT found for given email',
+                STATUS.UNAUTHORISED
+            )
         }
 
         return user;

@@ -4,20 +4,23 @@ const { STATUS } = require('../utils/contants');
 const validateUserRequestBody = (req, res, next) => {
      // validating name
     if(!req.body.firstName){
-        errorResponseBody.err = 'Name NOT found in a request object';
-        return res.status(STATUS.BAD_REQUEST).json(errorResponseBody);
+        return res.status(STATUS.BAD_REQUEST).json(
+            errorResponseBody('Name NOT found in a request object')
+        );
     }
 
     // validating email
     if(!req.body.email){
-        errorResponseBody.err = 'Email NOT found in a request object';
-        return res.status(STATUS.BAD_REQUEST).json(errorResponseBody);
+        return res.status(STATUS.BAD_REQUEST).json(
+            errorResponseBody('Email NOT found in a request object')
+        );
     }
     
     // validating password
     if(!req.body.password){
-        errorResponseBody.err = 'Password NOT found in a request object';
-        return res.status(STATUS.BAD_REQUEST).json(errorResponseBody);
+        return res.status(STATUS.BAD_REQUEST).json(
+            errorResponseBody('Password NOT found in a request object')
+        );
     }
 
     next();
@@ -26,13 +29,15 @@ const validateUserRequestBody = (req, res, next) => {
 const validateUserSigninRequest = (req, res, next) => {
 
     if(!req.body.email) {
-        errorResponseBody.err = 'No email found in request body';
-        return res.status(STATUS.BAD_REQUEST).json(errorResponseBody);
+        return res.status(STATUS.BAD_REQUEST).json(
+            errorResponseBody('No email found in request body')
+        );
     }
     
     if(!req.body.password) {
-        errorResponseBody.err = 'No password found in request body';
-        return res.status(STATUS.BAD_REQUEST).json(errorResponseBody);
+        return res.status(STATUS.BAD_REQUEST).json(
+            errorResponseBody('No password found in request body')
+        );
     }
 
     next();

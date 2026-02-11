@@ -2,6 +2,7 @@ const userService = require('../services/user.service');
 const { STATUS } = require('../utils/contants');
 const { successResponseBody, errorResponseBody } = require('../utils/responsebody');
 const jwt = require('jsonwebtoken');
+const AppError = require('../utils/errorbody');
 
 const register = async (req, res) => {
     try {
@@ -13,23 +14,23 @@ const register = async (req, res) => {
             { expiresIn : '4h' }
         );
 
-        successResponseBody.data = response;
-        successResponseBody.message = 'Successfully resgistered the user';
-
        return res
                 .cookie('token', token, { maxAge : 240*60*1000 })
                 .status(STATUS.CREATED)
-                .json(successResponseBody);
+                .json(successResponseBody(response, 'Successfully resgistered the user'));
 
     } catch (error) {
         
-        if(error.err) {
-            errorResponseBody.err = error.err;
-            return res.status(error.code).json(errorResponseBody);
+        if(error instanceof AppError) {
+
+            return res.status(error.statusCode).json(
+                errorResponseBody(error.details)
+            );
         }
 
-        errorResponseBody.err = error;
-        return res.status(STATUS.INTERNAL_SERVER_ERROR).json(errorResponseBody);
+        return res.status(STATUS.INTERNAL_SERVER_ERROR).json(
+            errorResponseBody(error)
+        );
     }
 }
 
@@ -40,10 +41,10 @@ const signin = async (req, res) => {
         const isValidPassword = await user.isValidPassword(req.body.password);
 
         if(!isValidPassword) {
-            throw {
-                err : 'Invalid password',
-                code : STATUS.UNAUTHORISED
-            }
+            throw new AppError(
+                'Invalid password',
+                STATUS.UNAUTHORISED
+            )
         }
 
         const token = jwt.sign(
@@ -52,22 +53,32 @@ const signin = async (req, res) => {
             {expiresIn : '4h'}
         );
 
-        successResponseBody.data = user;
-        successResponseBody.message = 'Successfully logged in!';
+        let response = {
+            firstName : user.firstName,
+            lastName : user.lastName,
+            email : user.email,
+            role : user.role
+        }
 
         return res
                 .cookie('token',token, { maxAge : 240*60*1000 })
                 .status(STATUS.OK)
-                .json(successResponseBody);
+                .json(successResponseBody(response,'Successfully logged in the user'));
 
    } catch (error) {
+        console.log(error);
+        
+        
+        if(error instanceof AppError) {
 
-        if(error.err) {
-            errorResponseBody.err = error.err;
-            return res.status(error.code).json(errorResponseBody);
+            return res.status(error.statusCode).json(
+                errorResponseBody(error.details)
+            );
         }
         
-        return res.status(STATUS.INTERNAL_SERVER_ERROR).json(errorResponseBody);
+        return res.status(STATUS.INTERNAL_SERVER_ERROR).json(
+            errorResponseBody(error)
+        );
     }
 
 }
