@@ -1,8 +1,11 @@
+// installed modules
+const jwt = require('jsonwebtoken');
+// custom modules
 const userService = require('../services/user.service');
 const { STATUS } = require('../utils/contants');
 const { successResponseBody, errorResponseBody } = require('../utils/responsebody');
-const jwt = require('jsonwebtoken');
 const AppError = require('../utils/errorbody');
+
 
 const register = async (req, res) => {
     try {
@@ -83,7 +86,24 @@ const signin = async (req, res) => {
 
 }
 
+const signout = async (req, res) => {
+    try {
+        const { token } = req.cookies;
+        const response = await userService.logout(token);
+
+        return res
+                .cookie('token',null, { expires: new Date(0), httpOnly: true })
+                .status(STATUS.OK)
+                .json(successResponseBody(response));
+
+    } catch (error) {
+        
+        return res.status(STATUS.INTERNAL_SERVER_ERROR).json(errorResponseBody(error));
+    }
+}
+
 module.exports = {
     register,
-    signin
+    signin,
+    signout
 }

@@ -1,6 +1,8 @@
 const User = require('../models/user.model');
 const { STATUS } = require('../utils/contants');
 const AppError = require('../utils/errorbody');
+const { redisClient } = require('../config/redis.config');
+const jwt = require('jsonwebtoken');
 
 const registerUser = async (data) => {
     try {
@@ -47,7 +49,22 @@ const getUserByEmail = async (email) => {
     }
 }
 
+const logout = async (token) => {
+    try {
+        const payload = jwt.decode(token);
+
+        await redisClient.set(`token:${token}`, 'Blocked');
+        await redisClient.expireAt(`token:${token}`, payload.exp);
+
+        return 'Successfully logged out';
+
+    } catch (error) {
+        throw error;
+    }
+}
+
 module.exports = {
     registerUser,
-    getUserByEmail
+    getUserByEmail,
+    logout
 }
