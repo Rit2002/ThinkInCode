@@ -18,8 +18,16 @@ authRouter.get(
 
 authRouter.post(
     '/signout',
-    authMiddleware.validateUserToken,
+    authMiddleware.isAuthenticated,
     authController.signout
+);
+
+authRouter.post(
+    '/admin/register',
+    authMiddleware.validateUserRequestBody,
+    authMiddleware.isAuthenticated,
+    authMiddleware.isAdmin,
+    authController.registerAdmin
 )
 
 module.exports = authRouter;

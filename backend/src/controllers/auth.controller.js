@@ -2,17 +2,18 @@
 const jwt = require('jsonwebtoken');
 // custom modules
 const userService = require('../services/user.service');
-const { STATUS } = require('../utils/contants');
+const { STATUS, USER_ROLE } = require('../utils/contants');
 const { successResponseBody, errorResponseBody } = require('../utils/responsebody');
 const AppError = require('../utils/errorbody');
 
 
 const register = async (req, res) => {
     try {
+        req.body.role = USER_ROLE.user;
         const response = await userService.registerUser(req.body);
 
         const token = jwt.sign(
-            {id : response.id, email : response.email},
+            {id : response.id, email : response.email, role : response.role},
             process.env.AUTH_KEY,
             { expiresIn : '4h' }
         );
@@ -51,7 +52,7 @@ const signin = async (req, res) => {
         }
 
         const token = jwt.sign(
-            {id: user.id, email: user.email},
+            {id: user.id, email: user.email, role : user.role},
             process.env.AUTH_KEY,
             {expiresIn : '4h'}
         );
@@ -64,7 +65,7 @@ const signin = async (req, res) => {
         }
 
         return res
-                .cookie('token',token, { maxAge : 240*60*1000 })
+                .cookie('token', token, { maxAge : 240*60*1000 })
                 .status(STATUS.OK)
                 .json(successResponseBody(response,'Successfully logged in the user'));
 
@@ -97,13 +98,47 @@ const signout = async (req, res) => {
                 .json(successResponseBody(response));
 
     } catch (error) {
+        console.log(error);
         
         return res.status(STATUS.INTERNAL_SERVER_ERROR).json(errorResponseBody(error));
+    }
+}
+
+const registerAdmin = async (req, res) => {
+    try {
+        req.body.role = USER_ROLE.admin;
+        const response = await userService.registerUser(req.body);
+
+        const token = jwt.sign(
+            { id : response.id, email : response.email, role : response.role },
+            process.env.AUTH_KEY,
+            { expiresIn : '4h' }
+        );
+
+        return res
+                .cookie('token', token, { maxAge : 240*60*1000 })
+                .status(STATUS.CREATED)
+                .json(successResponseBody(response, 'Successfully resgistered the user'));
+        
+    } catch (error) {
+        
+
+        if(error instanceof AppError) {
+
+            return res.status(error.statusCode).json(
+                errorResponseBody(error.details)
+            );
+        }
+
+        return res.status(STATUS.INTERNAL_SERVER_ERROR).json(
+            errorResponseBody(error)
+        );
     }
 }
 
 module.exports = {
     register,
     signin,
-    signout
+    signout,
+    registerAdmin
 }

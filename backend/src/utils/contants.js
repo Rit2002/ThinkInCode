@@ -15,6 +15,7 @@ const USER_ROLE = {
     admin : 'ADMIN'
 }
 
+
 module.exports = {
     STATUS,
     USER_ROLE

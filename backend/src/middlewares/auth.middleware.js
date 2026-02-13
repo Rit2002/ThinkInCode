@@ -1,5 +1,5 @@
 const { errorResponseBody } = require('../utils/responsebody');
-const { STATUS } = require('../utils/contants');
+const { STATUS, USER_ROLE } = require('../utils/contants');
 const { redisClient } = require('../config/redis.config');
 const jwt = require('jsonwebtoken');
 const User = require('../models/user.model');
@@ -26,6 +26,7 @@ const validateUserRequestBody = (req, res, next) => {
         );
     }
 
+
     next();
 }
 
@@ -46,15 +47,15 @@ const validateUserSigninRequest = (req, res, next) => {
     next();
 }
 
-const validateUserToken = async (req, res, next) => {
+const isAuthenticated = async (req, res, next) => {
     try {
-        // Extractin token from cookies
-        const { token } = req.cookies;
+        // Extracting token from cookies
+        const token = req.cookies?.token;
         
         // checking if token exist or not
         if(!token) {
-            return res.status(STATUS.NOT_FOUND).json(
-                errorResponseBody('No Token found')
+            return res.status(STATUS.UNAUTHORISED).json(
+                errorResponseBody('Token missing')
             );
         }
 
@@ -91,12 +92,47 @@ const validateUserToken = async (req, res, next) => {
             );
         }
 
+     
         // If everything is okay
         req.user = user;
 
         next();
 
     } catch (error) {
+        console.log(error);
+        
+        if(error.name == 'JsonWebTokenError') {
+            return res.status(STATUS.UNAUTHORISED).json(
+                errorResponseBody(error.message)
+            );
+        }
+
+        if(error.name == 'TokenExpiredError') {
+            return res.status(STATUS.UNAUTHORISED).json(
+                errorResponseBody(error.message)
+            );
+        }
+
+        return res.status(STATUS.INTERNAL_SERVER_ERROR).json(
+            errorResponseBody(error)
+        );
+    }
+}
+
+const isAdmin = (req, res, next) => {
+    try {
+
+        if(req.user.role != USER_ROLE.admin) {
+
+            return res.status(STATUS.UNAUTHORISED).json(
+                errorResponseBody('You are NOT Authorised to register the user')
+            )
+        }
+
+        next();
+
+    } catch (error) {
+        
         console.log(error);        
     }
 }
@@ -104,5 +140,6 @@ const validateUserToken = async (req, res, next) => {
 module.exports = {
     validateUserRequestBody,
     validateUserSigninRequest,
-    validateUserToken
+    isAuthenticated,
+    isAdmin
 }
