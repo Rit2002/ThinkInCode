@@ -6,6 +6,7 @@ const problemSchema = new mongoose.Schema({
         type: String,
         required: true,
         trim: true,
+        unique: true,
         maxLength: 30,
         minLength: 3
     },
@@ -71,6 +72,18 @@ const problemSchema = new mongoose.Schema({
             required: true
         }
     }],
+
+    referenceCode: [{
+        language: {
+            type: String,
+            required: true
+        },
+        completeCode: {
+            type: String,
+            required: true
+        }
+    }],
+
     problemCreator: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User',

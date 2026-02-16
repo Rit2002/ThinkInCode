@@ -6,6 +6,16 @@ const jwt = require('jsonwebtoken');
 
 const registerUser = async (data) => {
     try {
+
+        const exists = await User.findOne({ email: data.email });
+        
+        if(exists) {
+            throw new AppError(
+                STATUS.CONFLICT,
+                'user already exists'
+            );
+        }
+
         const user = await User.create(data);
         return user;
 
@@ -23,6 +33,13 @@ const registerUser = async (data) => {
                 err,
                 STATUS.UNPROCESSABLE_ENTITY                
             )
+        }
+
+        if(error instanceof AppError) {
+            throw new AppError(
+                error.statusCode,
+                error.details
+            );
         }
         
         throw error;

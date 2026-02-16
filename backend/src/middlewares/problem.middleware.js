@@ -121,6 +121,28 @@ const validateProblemCreateRequest = (req, res, next) => {
         );
     }
 
+    if(!req.body.referenceCode) {
+        res.status(STATUS.BAD_REQUEST).json(
+            errorResponseBody('Reference code not found')
+        );
+    }
+
+    for(let i=0;i<req.body.referenceCode.length;i++) {
+
+        // validating every field for each and every object inside hiddenTestCases
+        if(!req.body.referenceCode[i].language){
+            return res.status(STATUS.BAD_REQUEST).json(
+                errorResponseBody('language inside referenceCode NOT found')
+            );
+        }
+
+        if(!req.body.referenceCode[i].completeCode){
+            return res.status(STATUS.BAD_REQUEST).json(
+                errorResponseBody('completeCode inside referenceCode NOT found')
+            );
+        }
+    }
+
     // everything ok
     next();
 }
