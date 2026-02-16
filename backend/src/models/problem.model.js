@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const { DIFFICULTY_LEVEL, TAGS } = require('../utils/contants');
+
 const problemSchema = new mongoose.Schema({
     title: {
         type: String,
@@ -18,7 +19,7 @@ const problemSchema = new mongoose.Schema({
     difficulty: {
         type: String,
         enum: {
-            values: Object.keys(DIFFICULTY_LEVEL),
+            values: Object.values(DIFFICULTY_LEVEL),
             message: 'Invalid difficulty level'
         },
         required: true
@@ -26,7 +27,7 @@ const problemSchema = new mongoose.Schema({
     tags: {
         type: String,
         enum: {
-            values: Object.keys(TAGS),
+            values: Object.values(TAGS),
             message: 'Invalid tag type'
         },
         required: true
@@ -66,7 +67,7 @@ const problemSchema = new mongoose.Schema({
             required: true
         },
         boilerplateCode: {
-            tyep: String,
+            type: String,
             required: true
         }
     }],
