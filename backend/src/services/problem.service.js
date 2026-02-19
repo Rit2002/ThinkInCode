@@ -11,11 +11,11 @@ const createProblem = async (data) => {
             const languageId = getLanguageById(language);
              
             // creating language wise batch of submissions
-            const submissions = data.visibleTestCases.map((input, output) => ({
+            const submissions = data.visibleTestCases.map((testcase) => ({
                 source_code : completeCode,
                 language_id : languageId,
-                stdin : input,
-                expected_output : output
+                stdin : testcase.input,
+                expected_output : testcase.output
             }));
 
             const submitResult = await submitBatch(submissions);

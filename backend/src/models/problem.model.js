@@ -89,7 +89,7 @@ const problemSchema = new mongoose.Schema({
         ref: 'User',
         required: true
     }
-});
+}, { timestamps : true });
 
 const Problem = mongoose.model('Problem', problemSchema);
 
