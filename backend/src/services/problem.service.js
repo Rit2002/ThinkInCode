@@ -1,26 +1,10 @@
 const Problem = require('../models/problem.model');
-const { STATUS } = require('../utils/contants');
-const { getLanguageById, submitBatch } = require('../utils/problem');
+const { STATUS, LANGUAGE } = require('../utils/contants');
+const { submitBatch, submitTokens, waiting } = require('../utils/problem');
 const AppError = require('../utils/errorbody');
 
-const createProblem = async (data) => {
+const createProblem = async (data, user) => {
     try {
-
-        for(const { language, completeCode } of data.referenceCode) {
-
-            const languageId = getLanguageById(language);
-             
-            // creating language wise batch of submissions
-            const submissions = data.visibleTestCases.map((testcase) => ({
-                source_code : completeCode,
-                language_id : languageId,
-                stdin : testcase.input,
-                expected_output : testcase.output
-            }));
-
-            const submitResult = await submitBatch(submissions);
-        }
-
 
         const exists = await Problem.findOne({ title: data.title });
 
@@ -31,7 +15,56 @@ const createProblem = async (data) => {
             );
         }
         
-        const problem = await Problem.create(data);
+        for(const { language, completeCode } of data.referenceCode) {
+
+            const languageId = LANGUAGE[language.toLowerCase()];
+             console.log("language:", language, "→ languageId:", languageId);
+            // creating language wise batch of submissions
+            const submissions = data.visibleTestCases.map((testcase) => ({
+                source_code : completeCode,
+                language_id : languageId,
+                stdin : testcase.input,
+                expected_output : testcase.output
+            }));
+
+            const submitResult = await submitBatch(submissions);
+
+            const resultTokens = submitResult.map( value => value.token);
+            
+            
+            let testResult;
+            const MAX_ATTEMPTS = 10;
+            for (let attempt = 0; attempt < MAX_ATTEMPTS; attempt++) {
+
+                testResult = await submitTokens(resultTokens);
+                testResult.forEach( key => console.log(key));
+                if (testResult.every((res) => res.status.id > 2)) break;
+
+                if (attempt === MAX_ATTEMPTS - 1) {
+
+                    throw new AppError(STATUS.BAD_REQUEST, 'Judging timed out');
+                }
+
+                await waiting(1000);
+            }
+
+            for(const result of testResult) {
+                
+                if(result.status.id != 3){
+
+                    throw new AppError(
+                        result.status.description,
+                        STATUS.BAD_REQUEST
+                    );
+                }
+            }
+        }
+
+        
+        const problem = await Problem.create({
+            ...data,
+            problemCreator: user.id
+        });
 
         return problem;
 
@@ -50,15 +83,8 @@ const createProblem = async (data) => {
                 err
             );
         }
-
-        if(error instanceof AppError) {
-            throw new AppError(
-                error.statusCode,
-                error.details
-            );
-        }
         
-        throw err;
+        throw error;
     }
 }
 

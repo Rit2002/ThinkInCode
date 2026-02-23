@@ -5,7 +5,7 @@ const { successResponseBody, errorResponseBody } = require('../utils/responsebod
 
 const createProblem = async (req, res) => {
     try {
-        const response = await problemService.createProblem(req.body);
+        const response = await problemService.createProblem(req.body, req.user);
 
         return res.status(STATUS.CREATED).json(
             successResponseBody(response, 'Successfully created the problem')

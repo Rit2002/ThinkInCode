@@ -109,17 +109,17 @@ const validateProblemCreateRequest = (req, res, next) => {
         }
     }
 
-    if(!req.body.problemCreator) {
-        res.status(STATUS.BAD_REQUEST).json(
-            errorResponseBody('Problem Creators id not found')
-        );
-    }
+    // if(!req.body.problemCreator) {
+    //     res.status(STATUS.BAD_REQUEST).json(
+    //         errorResponseBody('Problem Creators id not found')
+    //     );
+    // }
 
-    if(!objectId.isValid(req.body.problemCreator)) {
-        res.status(STATUS.BAD_REQUEST).json(
-            errorResponseBody('Invalid Problem Creators id')
-        );
-    }
+    // if(!objectId.isValid(req.body.problemCreator)) {
+    //     res.status(STATUS.BAD_REQUEST).json(
+    //         errorResponseBody('Invalid Problem Creators id')
+    //     );
+    // }
 
     if(!req.body.referenceCode) {
         res.status(STATUS.BAD_REQUEST).json(

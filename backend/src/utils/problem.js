@@ -1,15 +1,14 @@
 const axios = require('axios');
 
-const getLanguageById =  (lang) => {
+const waiting = async (timer) => {
 
-    const language = {
-        'c++' :  54,
-        'javascript' : 63,
-        'java' : 62,
-        'python' : 70
-    }
+    setTimeout(() => {
+        return 1;
+    }, timer);
 
-    return language[lang.toLowerCase()];
+    return new Promise(resolve => {
+        setTimeout(resolve, timer);
+    });
 }
 
 const submitBatch = async (submissions) => {
@@ -17,7 +16,7 @@ const submitBatch = async (submissions) => {
     
     try {
         const response = await axios.post(
-            "http://localhost:2358/submissions/batch?base64_encoded=false&wait=true",
+            `${process.env.JUDGE0_URL}/submissions/batch?base64_encoded=false`,
 
             {submissions: submissions},
 
@@ -29,10 +28,36 @@ const submitBatch = async (submissions) => {
 
     } catch (error) {
         console.error("Error submitting code:", error.response?.data || error.message);
+        throw error;
     }
 };
 
+const submitTokens = async (resultTokens) => {
+    try {
+        const tokenString = resultTokens.join(",");
+
+        const response = await axios.get(
+            `${process.env.JUDGE0_URL}/submissions/batch`,
+            {
+                params: {
+                    tokens: tokenString,
+                    base64_encoded: false
+                }
+            }
+        );
+        
+        return response.data.submissions;
+        
+    } catch (error) {
+        console.log(error);
+        
+        throw error;
+    }
+}
+
+
 module.exports = {
-    getLanguageById,
-    submitBatch
+    submitBatch,
+    submitTokens,
+    waiting
 }
