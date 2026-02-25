@@ -7,8 +7,17 @@ const authMiddleware = require('../middlewares/auth.middleware')
 problemRouter.post(
     '/create',
     authMiddleware.isAuthenticated,
+    authMiddleware.isAdmin,
     problemMiddleware.validateProblemCreateRequest,
-    problemController.createProblem
+    problemController.create
+);
+
+problemRouter.put(
+    '/update/:id',
+    authMiddleware.isAuthenticated,
+    authMiddleware.isAdmin,
+    problemMiddleware.validateProblemUpdateRequest,
+    problemController.update
 );
 
 module.exports = problemRouter;

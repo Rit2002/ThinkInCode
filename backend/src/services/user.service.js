@@ -30,8 +30,8 @@ const registerUser = async (data) => {
             });
 
             throw new AppError (
-                err,
-                STATUS.UNPROCESSABLE_ENTITY                
+                STATUS.UNPROCESSABLE_ENTITY,                
+                err
             )
         }
 
@@ -52,8 +52,8 @@ const getUserByEmail = async (email) => {
 
         if(!user) {
             throw new AppError(
-                'User NOT found for given email',
-                STATUS.UNAUTHORISED
+                STATUS.UNAUTHORISED,
+                'User NOT found for given email'
             )
         }
 

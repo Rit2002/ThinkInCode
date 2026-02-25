@@ -109,17 +109,6 @@ const validateProblemCreateRequest = (req, res, next) => {
         }
     }
 
-    // if(!req.body.problemCreator) {
-    //     res.status(STATUS.BAD_REQUEST).json(
-    //         errorResponseBody('Problem Creators id not found')
-    //     );
-    // }
-
-    // if(!objectId.isValid(req.body.problemCreator)) {
-    //     res.status(STATUS.BAD_REQUEST).json(
-    //         errorResponseBody('Invalid Problem Creators id')
-    //     );
-    // }
 
     if(!req.body.referenceCode) {
         res.status(STATUS.BAD_REQUEST).json(
@@ -147,6 +136,24 @@ const validateProblemCreateRequest = (req, res, next) => {
     next();
 }
 
+const validateProblemUpdateRequest = (req, res, next) => {
+
+    if(!req.params.id) {
+        return res.status(STATUS.BAD_REQUEST).json(
+            errorResponseBody('problem id NOT Found')
+        );
+    }
+
+    if(!objectId.isValid(req.params.id)) {
+        return res.status(STATUS.BAD_REQUEST).json(
+            errorResponseBody('Invalid problem id')
+        );
+    }
+
+    next();
+}
+
 module.exports = {
-    validateProblemCreateRequest
+    validateProblemCreateRequest,
+    validateProblemUpdateRequest
 }

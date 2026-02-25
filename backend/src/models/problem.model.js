@@ -14,7 +14,7 @@ const problemSchema = new mongoose.Schema({
         type: String,
         required: true,
         trim: true,
-        maxLength: 100,
+        maxLength: 200,
         minLength:5
     },
     difficulty: {
