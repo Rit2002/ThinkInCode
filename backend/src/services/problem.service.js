@@ -162,7 +162,89 @@ const updateProblem = async (problemId, data) => {
     }
 }
 
+const deleteProblem = async (problemId) => {
+    try {
+        const response = await Problem.findByIdAndDelete(problemId);
+
+        if(!response) {
+            throw new AppError(
+                STATUS.NOT_FOUND,
+                'Problem not found for given id'
+            );
+        }
+
+        return response;
+
+    } catch (error) {
+        console.log(error);
+
+        throw error;        
+    }
+}
+
+const getProblemById = async (problemId) => {
+    try {
+        const response = await Problem.findById(problemId);
+
+        if(!response) {
+            throw new AppError(
+                STATUS.NOT_FOUND,
+                'problem NOT found for given id'
+            );
+        }
+
+        return response;
+
+    } catch (error) {
+        console.log(error);
+
+        throw error;        
+    }
+}
+
+const getAllProblems = async (data) => {
+    try {
+        let filter = {};
+        
+        let limit = parseInt(data.limit);
+        let page = parseInt(data.page);
+
+        if(isNaN(limit) || limit < 10) limit = 10;
+        if(isNaN(page) || page < 0) page = 1;
+
+        limit = Math.min(limit, 50);
+
+        const skip = (page - 1) * limit;
+        
+        if(data.difficulty) {
+            filter.difficulty = data.difficulty;
+        }
+
+        if(data.tags) {
+            filter.tags = data.tags
+        }
+
+        const response = await Problem.find(filter).skip(skip).limit(limit);
+
+        const total = await Problem.countDocuments(filter);
+
+        return {
+            totalProblems : total,
+            totalPages : Math.ceil(total / limit),
+            problems : response
+        }
+
+    } catch (error) {
+        console.log(error);
+
+        throw error;        
+    }
+}
+
 module.exports = {
     createProblem,
-    updateProblem
+    updateProblem,
+    deleteProblem,
+    getProblemById,
+    getAllProblems
 }

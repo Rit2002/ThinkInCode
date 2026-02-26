@@ -16,8 +16,29 @@ problemRouter.put(
     '/update/:id',
     authMiddleware.isAuthenticated,
     authMiddleware.isAdmin,
-    problemMiddleware.validateProblemUpdateRequest,
+    problemMiddleware.validateRequest,
     problemController.update
+);
+
+problemRouter.delete(
+    '/delete/:id',
+    authMiddleware.isAuthenticated,
+    authMiddleware.isAdmin,
+    problemMiddleware.validateRequest,
+    problemController.deleteProblem
+);
+
+problemRouter.get(
+    '/get/:id',
+    authMiddleware.isAuthenticated,
+    problemMiddleware.validateRequest,
+    problemController.getProblem
+);
+
+problemRouter.get(
+    '/all',
+    authMiddleware.isAuthenticated,
+    problemController.getAllProblems
 );
 
 module.exports = problemRouter;

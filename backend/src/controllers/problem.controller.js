@@ -49,7 +49,72 @@ const update = async (req, res) => {
     }
 }
 
+const deleteProblem = async (req, res) => {
+    try {
+       const response = await problemService.deleteProblem(req.params.id);
+       
+       return res.status(STATUS.OK).json(
+        successResponseBody(response, 'successfully deleted the problem')
+       );
+
+    } catch (error) {
+        
+        if(error instanceof AppError) {
+
+            return res.status(error.statusCode).json(
+                errorResponseBody(error.details)
+            );
+        }
+
+        return res.status(STATUS.INTERNAL_SERVER_ERROR).json(
+            errorResponseBody(error)
+        );
+    }
+}
+
+const getProblem = async (req, res) => {
+    try {
+       const response = await problemService.getProblemById(req.params.id);
+       
+       return res.status(STATUS.OK).json(
+        successResponseBody(response, 'successfully fetched the problem')
+       );
+
+    } catch (error) {
+        
+        if(error instanceof AppError) {
+
+            return res.status(error.statusCode).json(
+                errorResponseBody(error.details)
+            );
+        }
+
+        return res.status(STATUS.INTERNAL_SERVER_ERROR).json(
+            errorResponseBody(error)
+        );
+    }
+}
+
+const getAllProblems = async (req, res) => {
+   try {
+       const response = await problemService.getAllProblems(req.query);
+       
+       return res.status(STATUS.OK).json(
+        successResponseBody(response, 'successfully fetched the problems')
+       );
+
+    } catch (error) {
+        
+        return res.status(STATUS.INTERNAL_SERVER_ERROR).json(
+            errorResponseBody(error)
+        );
+    } 
+}
+
 module.exports = {
     create,
-    update
+    update,
+    deleteProblem,
+    getProblem,
+    getAllProblems
 }

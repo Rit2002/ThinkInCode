@@ -71,13 +71,16 @@ const validateProblemCreateRequest = (req, res, next) => {
     for(let i=0;i<req.body.hiddenTestCases.length;i++) {
 
         // validating every field for each and every object inside hiddenTestCases
-        if(!req.body.hiddenTestCases[i].input){
+        if(req.body.hiddenTestCases[i].input == undefined){
             return res.status(STATUS.BAD_REQUEST).json(
                 errorResponseBody('input inside hiddenTestCases NOT found')
             );
         }
 
-        if(!req.body.hiddenTestCases[i].output){
+        // mongoDB throws error if we send an empty string so we need to concate null string (problem for which mongo throws error if we send empty string: longest substring )
+        if(req.body.hiddenTestCases[i].input.length == 0) req.body.hiddenTestCases[i].input += '\0';
+
+        if(req.body.hiddenTestCases[i].output == undefined){
             return res.status(STATUS.BAD_REQUEST).json(
                 errorResponseBody('output inside hiddenTestCases NOT found')
             );
@@ -136,7 +139,7 @@ const validateProblemCreateRequest = (req, res, next) => {
     next();
 }
 
-const validateProblemUpdateRequest = (req, res, next) => {
+const validateRequest = (req, res, next) => {
 
     if(!req.params.id) {
         return res.status(STATUS.BAD_REQUEST).json(
@@ -155,5 +158,5 @@ const validateProblemUpdateRequest = (req, res, next) => {
 
 module.exports = {
     validateProblemCreateRequest,
-    validateProblemUpdateRequest
+    validateRequest
 }

@@ -7,7 +7,7 @@ const problemSchema = new mongoose.Schema({
         required: true,
         trim: true,
         unique: true,
-        maxLength: 30,
+        maxLength: 50,
         minLength: 3
     },
     description: {
