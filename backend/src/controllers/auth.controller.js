@@ -46,8 +46,8 @@ const signin = async (req, res) => {
 
         if(!isValidPassword) {
             throw new AppError(
-                'Invalid password',
-                STATUS.UNAUTHORISED
+                STATUS.UNAUTHORISED,
+                'Invalid credentials'
             )
         }
 

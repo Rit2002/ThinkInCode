@@ -24,10 +24,10 @@ authRouter.post(
 
 authRouter.post(
     '/admin/register',
-    authMiddleware.validateUserRequestBody,
     authMiddleware.isAuthenticated,
     authMiddleware.isAdmin,
+    authMiddleware.validateUserRequestBody,
     authController.registerAdmin
-)
+);
 
 module.exports = authRouter;

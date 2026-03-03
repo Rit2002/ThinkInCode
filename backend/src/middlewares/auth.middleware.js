@@ -55,7 +55,7 @@ const isAuthenticated = async (req, res, next) => {
         // checking if token exist or not
         if(!token) {
             return res.status(STATUS.UNAUTHORISED).json(
-                errorResponseBody('Token missing')
+                errorResponseBody('Authentication required')
             );
         }
 
@@ -68,7 +68,7 @@ const isAuthenticated = async (req, res, next) => {
         // checking if id is present or not 
         if(!id) {
             return res.status(STATUS.UNAUTHORISED).json(
-                errorResponseBody('Invalid token')
+                errorResponseBody('Invalid Credentials')
             );
         }
 
@@ -78,7 +78,7 @@ const isAuthenticated = async (req, res, next) => {
         // returning if no user is found
         if(!user) {
             return res.status(STATUS.UNAUTHORISED).json(
-                errorResponseBody('Invalid token')
+                errorResponseBody('Invalid credentials')
             );
         }
 
@@ -88,7 +88,7 @@ const isAuthenticated = async (req, res, next) => {
         // if Blocked return
         if(isBlocked) {
             return res.status(STATUS.UNAUTHORISED).json(
-                errorResponseBody('Invalid token')
+                errorResponseBody('Invalid credentials')
             );
         }
 
@@ -125,7 +125,7 @@ const isAdmin = (req, res, next) => {
         if(req.user.role != USER_ROLE.admin) {
 
             return res.status(STATUS.UNAUTHORISED).json(
-                errorResponseBody('You are NOT Authorised to register the user')
+                errorResponseBody('You are NOT Authorised ')
             )
         }
 

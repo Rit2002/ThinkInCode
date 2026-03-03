@@ -43,7 +43,7 @@ userSchema.pre('save', async function() {
     // Runs this function only if password is modified inside document. If "this" check isn't provided any other field (other than password) changes (eg: firstName) this function will run and rehash the password.
     if (!this.isModified('password')) return;
 
-    const hash = bcrypt.hash(this.password, 10);
+    const hash = await bcrypt.hash(this.password, 10);
     this.password = hash;
 });
 
