@@ -1,15 +1,15 @@
 const mongoose = require('mongoose');
-const { LANGUAGE, JUDGE0_STATUS } = require('../utils/contants');
+const { LANGUAGE } = require('../utils/contants');
 
 const submissionSchema = new mongoose.Schema({
     userId: {
-        type: mongoose.SchemaTypes.ObjectId,
+        type: mongoose.Schema.Types.ObjectId,
         ref: 'User',
         required: true
     },
 
     problemId: {
-        type: mongoose.SchemaType.ObjectId,
+        type: mongoose.Schema.Types.ObjectId,
         ref: 'Problem',
         required: true
     },
@@ -23,9 +23,9 @@ const submissionSchema = new mongoose.Schema({
         type: String,
         required: true,
         enum: {
-            values: Object.values(LANGUAGE),
+            values: Object.keys(LANGUAGE),
             message: 'language not available'
-        }
+        },
     },
 
     runTime: {
@@ -41,8 +41,10 @@ const submissionSchema = new mongoose.Schema({
     status: {
         type: String,
         enum: {
-            values: Object.values(JUDGE0_STATUS)
-        }
+            values: ['Accepted', 'Pending', 'Wrong', 'Error'],
+            message: "Invalid status"
+        },
+        default: "Pending"
     },
 
     errorMessage: {

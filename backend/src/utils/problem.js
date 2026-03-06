@@ -18,7 +18,7 @@ const submitBatch = async (submissions) => {
         const response = await axios.post(
             `${process.env.JUDGE0_URL}/submissions/batch?base64_encoded=false`,
 
-            {submissions: submissions},
+            {submissions},
 
             { headers: {"Content-Type": "application/json"} }
         );
@@ -35,7 +35,8 @@ const submitBatch = async (submissions) => {
 const submitTokens = async (resultTokens) => {
     try {
         const tokenString = resultTokens.join(",");
-
+        console.log("this is token string ----->", tokenString);
+        
         const response = await axios.get(
             `${process.env.JUDGE0_URL}/submissions/batch`,
             {

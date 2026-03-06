@@ -10,7 +10,7 @@ authRouter.post(
     authController.register
 );
 
-authRouter.get(
+authRouter.post(
     '/signin',
     authMiddleware.validateUserSigninRequest,
     authController.signin

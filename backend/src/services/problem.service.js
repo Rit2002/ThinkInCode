@@ -193,7 +193,16 @@ const getProblemById = async (problemId) => {
             );
         }
 
-        return response;
+        return {
+            _id: response._id,
+            title: response.title,
+            description: response.description,
+            difficulty: response.difficulty,
+            tags: response.tags,
+            visibleTestCases: response.visibleTestCases,
+            starterCode: response.starterCode,
+            referenceCode: response.referenceCode
+        };
 
     } catch (error) {
         console.log(error);
@@ -224,7 +233,7 @@ const getAllProblems = async (data) => {
             filter.tags = data.tags
         }
 
-        const response = await Problem.find(filter).skip(skip).limit(limit);
+        const response = await Problem.find(filter).select('_id title difficulty tags').skip(skip).limit(limit);
 
         const total = await Problem.countDocuments(filter);
 
