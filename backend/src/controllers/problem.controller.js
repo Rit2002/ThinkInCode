@@ -16,7 +16,7 @@ const create = async (req, res) => {
         if(error instanceof AppError) {
 
             return res.status(error.statusCode).json(
-                errorResponseBody(error.details)
+                errorResponseBody(error.message)
             );
         }
 
@@ -39,7 +39,7 @@ const update = async (req, res) => {
         if(error instanceof AppError) {
 
             return res.status(error.statusCode).json(
-                errorResponseBody(error.details)
+                errorResponseBody(error.message)
             );
         }
 
@@ -62,7 +62,7 @@ const deleteProblem = async (req, res) => {
         if(error instanceof AppError) {
 
             return res.status(error.statusCode).json(
-                errorResponseBody(error.details)
+                errorResponseBody(error.message)
             );
         }
 
@@ -85,7 +85,7 @@ const getProblem = async (req, res) => {
         if(error instanceof AppError) {
 
             return res.status(error.statusCode).json(
-                errorResponseBody(error.details)
+                errorResponseBody(error.message)
             );
         }
 
@@ -111,10 +111,53 @@ const getAllProblems = async (req, res) => {
     } 
 }
 
+const solvedAllProblembyUser = async (req, res) => {
+    try {
+        const response = await problemService.solvedAllProblembyUser(req.query, req.user);
+
+        return res.status(STATUS.OK).json(
+            successResponseBody(response, "successfully fetched the problems solved by user")
+        );
+
+    } catch (error) {
+        
+
+        return res.status(STATUS.INTERNAL_SERVER_ERROR).json(
+            errorResponseBody(error)
+        );
+    }
+}
+
+const submittedProblem = async (req, res) => {
+   try {
+        const response = await problemService.submittedProblem(req.params.id, req.user);
+
+        return res.status(STATUS.OK).json(
+            successResponseBody(response, "successfully fetched the problems solved by user")
+        );
+
+    } catch (error) {
+        
+
+        if(error instanceof AppError) {
+
+            return res.status(error.statusCode).json(
+                errorResponseBody(error.message)
+            );
+        }
+
+        return res.status(STATUS.INTERNAL_SERVER_ERROR).json(
+            errorResponseBody(error)
+        );
+    }
+}
+
 module.exports = {
     create,
     update,
     deleteProblem,
     getProblem,
-    getAllProblems
+    getAllProblems,
+    solvedAllProblembyUser,
+    submittedProblem
 }

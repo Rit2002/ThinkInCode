@@ -12,6 +12,7 @@ const registerUser = async (data) => {
         if(exists) {
             throw new AppError(
                 STATUS.CONFLICT,
+                null,
                 'user already exists'
             );
         }
@@ -32,16 +33,9 @@ const registerUser = async (data) => {
             throw new AppError (
                 STATUS.UNPROCESSABLE_ENTITY,                
                 err
-            )
-        }
-
-        if(error instanceof AppError) {
-            throw new AppError(
-                error.statusCode,
-                error.details
             );
         }
-        
+
         throw error;
     }
 }
@@ -53,6 +47,7 @@ const getUserByEmail = async (email) => {
         if(!user) {
             throw new AppError(
                 STATUS.UNAUTHORISED,
+                null,
                 'User NOT found for given email'
             )
         }
@@ -80,8 +75,32 @@ const logout = async (token) => {
     }
 }
 
+const deleteUser = async (user) => {
+    try {
+        const userId = user._id;
+
+        const response = await User.findByIdAndDelete(userId);
+
+        if(!response) {
+            throw new AppError(
+                STATUS.NOT_FOUND,
+                null,
+                'User Not found'
+            );
+        }
+
+        return response;
+        
+    } catch (error) {
+        console.log(error);
+
+        throw error;        
+    }
+}
+
 module.exports = {
     registerUser,
     getUserByEmail,
-    logout
+    logout,
+    deleteUser
 }

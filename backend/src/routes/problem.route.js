@@ -41,4 +41,16 @@ problemRouter.get(
     problemController.getAllProblems
 );
 
+problemRouter.get(
+    '/problemSolvedByUser',
+    authMiddleware.isAuthenticated,
+    problemController.solvedAllProblembyUser
+)
+
+problemRouter.get(
+    '/submittedProblem/:id',
+    authMiddleware.isAuthenticated,
+    problemController.submittedProblem
+)
+
 module.exports = problemRouter;

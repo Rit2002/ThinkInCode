@@ -2,6 +2,8 @@ const Problem = require('../models/problem.model');
 const { STATUS, LANGUAGE } = require('../utils/contants');
 const { submitBatch, submitTokens, waiting } = require('../utils/problem');
 const AppError = require('../utils/errorbody');
+const User = require('../models/user.model');
+const Submission = require('../models/submission.model');
 
 const allowedFields = [
     "title",
@@ -83,6 +85,7 @@ const createProblem = async (data, user) => {
         if(exists) {
             throw new AppError(
                 STATUS.CONFLICT,
+                null,
                 'The problem you are trying to insert already exists'
             );
         }
@@ -127,6 +130,7 @@ const updateProblem = async (problemId, data) => {
 
             throw new AppError(
                 STATUS.NOT_FOUND,
+                null,
                 'Problem do not exits in DB for given id'
             );
         }
@@ -169,6 +173,7 @@ const deleteProblem = async (problemId) => {
         if(!response) {
             throw new AppError(
                 STATUS.NOT_FOUND,
+                null,
                 'Problem not found for given id'
             );
         }
@@ -189,6 +194,7 @@ const getProblemById = async (problemId) => {
         if(!response) {
             throw new AppError(
                 STATUS.NOT_FOUND,
+                null,
                 'problem NOT found for given id'
             );
         }
@@ -250,10 +256,50 @@ const getAllProblems = async (data) => {
     }
 }
 
+const solvedAllProblembyUser = async (query, user) => {
+    try {
+        const userProblems = await User.findById(user._id).populate({
+            path: 'problemSolved',
+            select: '_id title difficulty tags'
+        });
+
+        return userProblems.problemSolved;
+
+    } catch (error) {
+        
+        throw error;
+    }
+}
+
+const submittedProblem = async (problemId, user) => {
+    try {
+        const userId = user._id;
+
+        const response = await Submission.find({ userId, problemId });
+
+        if(!response) {
+            throw new AppError(
+                STATUS.NOT_FOUND,
+                null,
+                'Submissions NOT found'
+            );
+        }
+
+        return response;
+        
+    } catch (error) {
+        console.log(error);
+
+        throw error;        
+    }
+}
+
 module.exports = {
     createProblem,
     updateProblem,
     deleteProblem,
     getProblemById,
-    getAllProblems
+    getAllProblems,
+    solvedAllProblembyUser,
+    submittedProblem
 }

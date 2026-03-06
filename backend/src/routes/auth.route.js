@@ -30,4 +30,10 @@ authRouter.post(
     authController.registerAdmin
 );
 
+authRouter.delete(
+    '/profile/delete',
+    authMiddleware.isAuthenticated,
+    authController.deleteProfile
+)
+
 module.exports = authRouter;

@@ -1,5 +1,6 @@
 const Problem = require("../models/problem.model");
 const Submission = require('../models/submission.model');
+const User = require("../models/user.model");
 const { LANGUAGE, STATUS } = require("../utils/contants");
 const AppError = require("../utils/errorbody");
 const { submitBatch, submitTokens } = require("../utils/problem");
@@ -25,6 +26,7 @@ const submitCode = async (problemId, data, user) => {
             problemId,
             code,
             language,
+            status : 'Pending',
             totalTestCases: problem.hiddenTestCases.length
         });
 
@@ -59,28 +61,43 @@ const submitCode = async (problemId, data, user) => {
 
         for (const test of testResult) {
             const id = test.status.id;
-
-            if (id === 3) {
+            console.log(id);
+            
+            if (id == 3) {
                 testCasesPassed++;
                 runtime += Number(test.time);
                 memory = Math.max(memory, Number(test.memory));
             } else {
-                if (id === 4) {
+                if (id == 4) {
                     status = "Error";
                     errorMessage = test.stderr;
                 } else {
                     status = "Wrong";
+                    errorMessage = test.stderr;
+                    console.log(errorMessage);
+                    
                 }
                 break;
             }
         }
 
         submittedResult.status = status;
+        submittedResult.testCasesPassed = testCasesPassed;
         submittedResult.errorMessage = errorMessage;
         submittedResult.runTime = runtime;
         submittedResult.memory = memory;
 
         await submittedResult.save();
+
+        /**
+         * User schema contains the field problemSolved --> means total no of unique problems solved by user
+         * if --> checks if the problem is already present or not, 
+         * NOT present ---> Adds it to the problemSolved array
+         */
+        if(!user.problemSolved.includes(problemId)) {
+            user.problemSolved.push(problemId);
+            await user.save();
+        }
 
         return submittedResult;
         
@@ -91,6 +108,52 @@ const submitCode = async (problemId, data, user) => {
     }
 }
 
+const runCode = async (problemId, data, user) => {
+    try {
+        const userId = user._id;
+
+        const problem = await Problem.findById(problemId);
+
+        if(!problem) {
+            throw new AppError(
+                STATUS.NOT_FOUND,
+                null,
+                "Problem NOT found for given id"
+            );
+        }
+
+        const {code, language} = data;
+
+        const languageId = LANGUAGE[language.toLowerCase()];
+        
+
+        const submissions = problem.visibleTestCases.map( testcase => ({
+            source_code : code,
+            language_id : languageId,
+            stdin : testcase.input,
+            expected_output : testcase.output
+        }));
+
+        
+        // send the code to judge0
+        const submitResult = await submitBatch(submissions);
+        
+        const resultTokens = submitResult.map( r => r.token);
+        
+        // send the token & get the result
+        const testResult = await submitTokens(resultTokens);
+       
+
+        return testResult;
+        
+    } catch (error) {
+        console.log(error);
+
+        throw error;        
+    }
+}
+
 module.exports = {
-    submitCode
+    submitCode,
+    runCode
 }

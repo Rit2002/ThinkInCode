@@ -64,6 +64,13 @@ const submissionSchema = new mongoose.Schema({
 
 }, { timestamps : true });
 
+
+/**
+ * Why on userId & problemId? --> Becoz, user will frequenty be checking(querying) the submission tab in problem section(which shows no of submission for a problem)
+ */
+
+submissionSchema.index({ userId : 1, problemId : 1 });
+
 const Submission = mongoose.model('Submission', submissionSchema);
 
 module.exports = Submission;
