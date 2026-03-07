@@ -8,7 +8,8 @@ const STATUS = {
     FORBIDDEN : 403,
     BAD_REQUEST : 400,
     NOT_FOUND : 404,
-    CONFLICT: 409
+    CONFLICT: 409,
+    TOOMANYREQUEST: 429
 }
 
 const USER_ROLE = {

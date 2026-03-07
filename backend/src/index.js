@@ -9,6 +9,7 @@ const { connectRedis } = require('./config/redis.config');
 const authRoutes = require('./routes/auth.route');
 const problemRoutes = require('./routes/problem.route');
 const submissionRoutes = require('./routes/submission.route');
+const rateLimiter = require('./middlewares/rateLimiter.middleware');
 
 const app = express();
 dotenv.config();
@@ -17,6 +18,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended : true }));
 app.use(cookieParser());
 
+app.use(rateLimiter);
 app.use('/tic/api/v1/auth', authRoutes);
 app.use('/tic/api/v1/problem', problemRoutes);
 app.use('/tic/api/v1/', submissionRoutes)
