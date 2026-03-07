@@ -6,6 +6,17 @@ const jwt = require('jsonwebtoken');
 
 const registerUser = async (data) => {
     try {
+
+        const exists = await User.findOne({ email: data.email });
+        
+        if(exists) {
+            throw new AppError(
+                STATUS.CONFLICT,
+                null,
+                'user already exists'
+            );
+        }
+
         const user = await User.create(data);
         return user;
 
@@ -20,11 +31,11 @@ const registerUser = async (data) => {
             });
 
             throw new AppError (
-                err,
-                STATUS.UNPROCESSABLE_ENTITY                
-            )
+                STATUS.UNPROCESSABLE_ENTITY,                
+                err
+            );
         }
-        
+
         throw error;
     }
 }
@@ -35,8 +46,9 @@ const getUserByEmail = async (email) => {
 
         if(!user) {
             throw new AppError(
-                'User NOT found for given email',
-                STATUS.UNAUTHORISED
+                STATUS.UNAUTHORISED,
+                null,
+                'User NOT found for given email'
             )
         }
 
@@ -63,8 +75,32 @@ const logout = async (token) => {
     }
 }
 
+const deleteUser = async (user) => {
+    try {
+        const userId = user._id;
+
+        const response = await User.findByIdAndDelete(userId);
+
+        if(!response) {
+            throw new AppError(
+                STATUS.NOT_FOUND,
+                null,
+                'User Not found'
+            );
+        }
+
+        return response;
+        
+    } catch (error) {
+        console.log(error);
+
+        throw error;        
+    }
+}
+
 module.exports = {
     registerUser,
     getUserByEmail,
-    logout
+    logout,
+    deleteUser
 }

@@ -34,18 +34,34 @@ const userSchema = new mongoose.Schema({
         default: USER_ROLE.user
     },
     problemSolved: {
-        type:[String]
+        type:[{
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'Problem'
+        }],
+        unique: true
     }
 }, { timestamps : true });
 
 // userSchema.pre('save', ...) --> This means: “Before saving a user document, run this function.”
 userSchema.pre('save', async function() {
-    // Runs this function only if password is modified inside document. If this check isn't provided any other field (other than password) changes (eg: firstName) this function will run and rehash the password.
+    // Runs this function only if password is modified inside document. If "this" check isn't provided any other field (other than password) changes (eg: firstName) this function will run and rehash the password.
     if (!this.isModified('password')) return;
 
     const hash = await bcrypt.hash(this.password, 10);
     this.password = hash;
 });
+
+/**
+ * findOneAndDelete ---> triggers when findByIdAndDelete is used, basically it is mongodb method to delete
+ * userDoc ---> After delete mongo returns the document, this is that document.
+ * post ---> after the user has deleted from the user collection this method invokes
+ */
+userSchema.post('findOneAndDelete', async function(userDoc) {
+    if(userDoc) {
+        await mongoose.model('Submission').deleteMany({ userId : userDoc._id });
+    }
+})
+
 
 userSchema.methods.isValidPassword = async function (plainPassword) {
     const compare = bcrypt.compare(plainPassword, this.password);

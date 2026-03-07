@@ -27,8 +27,8 @@ const register = async (req, res) => {
         
         if(error instanceof AppError) {
 
-            return res.status(error.statusCode).json(
-                errorResponseBody(error.details)
+           return res.status(error.statusCode).json(
+                errorResponseBody(error.message)
             );
         }
 
@@ -46,8 +46,9 @@ const signin = async (req, res) => {
 
         if(!isValidPassword) {
             throw new AppError(
-                'Invalid password',
-                STATUS.UNAUTHORISED
+                STATUS.UNAUTHORISED,
+                null,
+                'Invalid credentials'
             )
         }
 
@@ -76,7 +77,7 @@ const signin = async (req, res) => {
         if(error instanceof AppError) {
 
             return res.status(error.statusCode).json(
-                errorResponseBody(error.details)
+                errorResponseBody(error.message)
             );
         }
         
@@ -126,7 +127,29 @@ const registerAdmin = async (req, res) => {
         if(error instanceof AppError) {
 
             return res.status(error.statusCode).json(
-                errorResponseBody(error.details)
+                errorResponseBody(error.message)
+            );
+        }
+
+        return res.status(STATUS.INTERNAL_SERVER_ERROR).json(
+            errorResponseBody(error)
+        );
+    }
+}
+
+const deleteProfile = async (req, res) => {
+    try {
+        const response = await userService.deleteUser(req.user);
+
+        return res.status(STATUS.OK).json(
+            successResponseBody(response, "successfully deleted user profile")
+        );
+
+    } catch (error) {
+        
+        if(error instanceof AppError) {
+            return res.status(error.statusCode).json(
+                errorResponseBody(error.message)
             );
         }
 
@@ -140,5 +163,6 @@ module.exports = {
     register,
     signin,
     signout,
-    registerAdmin
+    registerAdmin,
+    deleteProfile
 }

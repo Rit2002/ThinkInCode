@@ -10,7 +10,7 @@ authRouter.post(
     authController.register
 );
 
-authRouter.get(
+authRouter.post(
     '/signin',
     authMiddleware.validateUserSigninRequest,
     authController.signin
@@ -24,10 +24,16 @@ authRouter.post(
 
 authRouter.post(
     '/admin/register',
-    authMiddleware.validateUserRequestBody,
     authMiddleware.isAuthenticated,
     authMiddleware.isAdmin,
+    authMiddleware.validateUserRequestBody,
     authController.registerAdmin
+);
+
+authRouter.delete(
+    '/profile/delete',
+    authMiddleware.isAuthenticated,
+    authController.deleteProfile
 )
 
 module.exports = authRouter;
