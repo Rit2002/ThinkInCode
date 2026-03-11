@@ -34,6 +34,12 @@ authRouter.delete(
     '/profile/delete',
     authMiddleware.isAuthenticated,
     authController.deleteProfile
-)
+);
+
+authRouter.get(
+    '/check',
+    authMiddleware.isAuthenticated,
+    authController.sendUserInfo
+);
 
 module.exports = authRouter;

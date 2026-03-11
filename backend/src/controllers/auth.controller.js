@@ -159,10 +159,23 @@ const deleteProfile = async (req, res) => {
     }
 }
 
+const sendUserInfo = (req, res) => {
+    const response = {
+        _id :       req.user._id,
+        firstName : req.user.firstName,
+        email :     req.user.email,
+    }
+
+    return res.status(STATUS.OK).json(
+        successResponseBody(response)
+    );
+}
+
 module.exports = {
     register,
     signin,
     signout,
     registerAdmin,
-    deleteProfile
+    deleteProfile,
+    sendUserInfo
 }
