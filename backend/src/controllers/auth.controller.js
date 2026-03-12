@@ -160,6 +160,7 @@ const deleteProfile = async (req, res) => {
 }
 
 const sendUserInfo = (req, res) => {
+
     const response = {
         _id :       req.user._id,
         firstName : req.user.firstName,

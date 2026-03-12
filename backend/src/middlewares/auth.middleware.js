@@ -137,9 +137,21 @@ const isAdmin = (req, res, next) => {
     }
 }
 
+const isTokenPresent = (req, res, next) => {
+
+    if(!req.cookie?.token) {
+        return res.status(STATUS.UNAUTHORISED).json(
+            errorResponseBody("No token present, please signin or signup")
+        );
+    }
+
+    next();
+}
+
 module.exports = {
     validateUserRequestBody,
     validateUserSigninRequest,
     isAuthenticated,
-    isAdmin
+    isAdmin,
+    isTokenPresent
 }

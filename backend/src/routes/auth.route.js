@@ -38,7 +38,7 @@ authRouter.delete(
 
 authRouter.get(
     '/check',
-    authMiddleware.isAuthenticated,
+    authMiddleware.isTokenPresent,
     authController.sendUserInfo
 );
 
