@@ -136,7 +136,7 @@ const authSlice = createSlice({
             .addCase(registerUser.rejected, (state, action) => {
                 state.loading = false;
                 state.isAuthenticated = false
-                state.error = action.payload.err || 'something went wrong';
+                state.error = action.payload?.err || 'something went wrong';
                 state.user = null;
             })
             .addCase(loginUser.pending, (state) => {
@@ -151,7 +151,7 @@ const authSlice = createSlice({
             .addCase(loginUser.rejected, (state, action) => {
                 state.loading = false;
                 state.isAuthenticated = false
-                state.error = action.payload.err || 'something went wrong';
+                state.error = action.payload?.err || 'something went wrong';
                 state.user = null;
             })
             .addCase(checkAuth.pending, (state) => {
@@ -166,7 +166,7 @@ const authSlice = createSlice({
             .addCase(checkAuth.rejected, (state, action) => {
                 state.loading = false;
                 state.isAuthenticated = false
-                state.error = action.payload.err || 'something went wrong';
+                state.error = action.payload?.err || 'something went wrong';
                 state.user = null;
             })
             .addCase(logoutUser.pending, (state) => {
@@ -181,7 +181,7 @@ const authSlice = createSlice({
             .addCase(logoutUser.rejected, (state, action) => {
                 state.loading = false;
                 state.isAuthenticated = false
-                state.error = action.payload.err || 'something went wrong';
+                state.error = action.payload?.err || 'something went wrong';
                 state.user = null;
             })
     }

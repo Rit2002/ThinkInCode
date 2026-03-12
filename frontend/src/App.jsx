@@ -1,10 +1,10 @@
-import { Route, Routes } from "react-router";
+import { Navigate, Route, Routes } from "react-router";
 import Homepage from "./pages/Homepage";
 import Signup from "./pages/SignUp";
 import Login from "./pages/Login";
-import { checkAuth } from './app/authSlice.js';
+import { checkAuth } from './app/authSlice';
 import { useDispatch, useSelector } from 'react-redux';
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 
 function App() {
 
@@ -18,19 +18,26 @@ function App() {
       }
    */
 
-  const isAuthenticated = useSelector( state => state.auth);
+  const { isAuthenticated } = useSelector( state => state.auth);
   const dispatch = useDispatch();
+
+  // React in development deliberately runs certain lifecycle flows twice to detect side-effects. That includes useEffect. So two api call are going to backend (route: /auth/check) & due to rate limiting return 429 status
+  const called = useRef(false);
+
   // checkAuth() inside dispatch means runs the checkAuth fn --> checkAUth makes API calls --> than Redux updates auth slice inside the store
   useEffect(()=>{
+    if(called.current) return;
+
+    called.current = true;
     dispatch(checkAuth());
-  },[]);
+  },[dispatch]);
 
   return (
     <>
       <Routes>
-        <Route path="/" element={<Homepage></Homepage>} ></Route>
-        <Route path="/signup" element={<Signup></Signup>}></Route>
-        <Route path="/login" element={<Login></Login>} ></Route>
+        <Route path="/" element={isAuthenticated ? <Homepage /> : <Navigate to="/signup" />} ></Route>
+        <Route path="/signup" element={isAuthenticated ? <Navigate to="/" /> : <Signup /> }></Route>
+        <Route path="/login" element={isAuthenticated ? <Navigate to="/" /> : <Login /> } ></Route>
       </Routes>
     </>
   )

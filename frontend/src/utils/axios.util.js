@@ -3,7 +3,7 @@ import axios from 'axios';
 const axiosClient = axios.create({
     baseURL: 'http://localhost:3000/tic/api/v1',
     // automatically adds the token with the request
-    withCredentials: true,
+    credentials: true,
     headers: {
         "Content-Type" : "application/json"
     }
