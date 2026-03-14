@@ -9,3 +9,4 @@ export const store = configureStore({
 });
 
 // NOTE: ONLY one store is possible per application
+
